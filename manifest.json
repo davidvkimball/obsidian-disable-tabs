@@ -1,9 +1,9 @@
 {
 	"id": "disable-tabs",
 	"name": "Disable Tabs",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "Disables the ability to open multiple tabs, enforcing a single-tab interface.",
+	"description": "Disables more than one tab at a time in Obsidian.",
 	"author": "David V. Kimball",
 	"authorUrl": "https://davidvkimball.com",
 	"fundingUrl": "https://patreon.com/davidvkimball",

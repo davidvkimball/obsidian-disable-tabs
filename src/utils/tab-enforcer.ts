@@ -14,7 +14,7 @@ export class TabEnforcer {
     });
 
     if (leaves.length > 1) {
-      const active = this.app.workspace.activeLeaf;
+      const active = this.app.workspace.getMostRecentLeaf();
       if (active && leaves.includes(active)) {
         leaves.forEach(leaf => {
           if (leaf !== active) {

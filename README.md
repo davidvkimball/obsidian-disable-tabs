@@ -1,6 +1,8 @@
 # Disable Tabs in Obsidian
 Disables the ability to open multiple tabs, enforcing a single-tab interface.
 
+![disable-tabs-preview](https://github.com/user-attachments/assets/662730a6-109c-4c50-9d97-9f9bbcdef66f)
+
 Particularly useful when hiding the tab bar with the [Hider](https://github.com/kepano/obsidian-hider) plugin.
 
 Also pairs nicely with this CSS Snippet to hide the tabs icon on mobile: 

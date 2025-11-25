@@ -13,6 +13,10 @@ Also pairs nicely with this CSS Snippet to hide the tabs icon on mobile:
 }
 ```
 
+## Made for Vault CMS
+
+Part of the [Vault CMS](https://github.com/davidvkimball/vault-cms) project.
+
 ## Installation
 
 Disable Tabs is not yet available in the Community plugins section. Install using [BRAT](https://github.com/TfTHacker/obsidian42-brat) or manually:

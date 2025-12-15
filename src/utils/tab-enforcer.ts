@@ -14,7 +14,25 @@ export class TabEnforcer {
     });
 
     if (leaves.length > 1) {
-      const active = this.app.workspace.getMostRecentLeaf();
+      // Find the active leaf by checking which leaf is currently active
+      // This avoids using the deprecated activeLeaf property
+      // Check the leaf's container element for the 'is-active' class
+      let active: WorkspaceLeaf | null = null;
+      
+      for (const leaf of leaves) {
+        // Check if this leaf's container has the active class
+        // The active leaf will have the 'is-active' class on its container element
+        if (leaf.containerEl?.hasClass('is-active')) {
+          active = leaf;
+          break;
+        }
+      }
+      
+      // Fallback: if no active leaf found, use the first leaf
+      if (!active && leaves.length > 0) {
+        active = leaves[0];
+      }
+
       if (active && leaves.includes(active)) {
         leaves.forEach(leaf => {
           if (leaf !== active) {

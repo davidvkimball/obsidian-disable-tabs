@@ -1,27 +1,108 @@
 # AI Agent Instructions
 
-This file serves as the entry point for AI agents working on Obsidian plugin or theme development projects. The detailed instructions have been organized into a structured directory for better maintainability.
+This file serves as the **project-specific entry point** for AI agents working on this Obsidian plugin project. General-purpose instructions are located in the [`.agents`](.agents/) directory.
 
-**Applicability**: Each file in `.agents` is marked with its applicability:
-- **Plugin** - Only relevant for plugin development
-- **Theme** - Only relevant for theme development  
-- **Both** - Relevant for both plugins and themes
+**Note**: The `.agents/` directory contains guidance files tailored for Obsidian plugin development. Some files are plugin-specific, while others are shared with theme development.
+
+---
+
+## Project Context
+
+<!--
+Source: Project-specific (not synced from reference repos)
+Last updated: 2025-12-19
+Applicability: Plugin
+-->
+
+### Project Overview
+
+**Disable Tabs** is an Obsidian plugin that enforces a single-tab interface by preventing users from opening multiple tabs simultaneously. When a new tab is opened, all other tabs are automatically closed, leaving only the active tab visible.
+
+The plugin is part of the [Vault CMS](https://github.com/davidvkimball/vault-cms) project and works particularly well when combined with the [Hider](https://github.com/kepano/obsidian-hider) plugin to hide the tab bar entirely. It also supports hiding the mobile tabs icon via CSS for a cleaner mobile experience.
+
+### Important Project-Specific Details
+
+- **Type**: Plugin
+- **Purpose**: Enforce single-tab interface in Obsidian
+- **Status**: Production (v1.0.7)
+- **Min App Version**: 0.15.0
+- **Key Features**:
+  - Single tab enforcement (automatically closes all tabs except the active one)
+  - Mobile tab icon hiding (optional setting to hide tabs icon on mobile devices)
+  - Works with Hider plugin for complete tab bar removal
+- **Architecture**: Simple plugin with a `TabEnforcer` utility class that monitors workspace layout changes and enforces single-tab behavior
+
+### Maintenance Tasks
+
+- Keep Obsidian API references updated (especially for workspace and tab management APIs)
+- Monitor for Obsidian API changes affecting tab management and workspace leaf handling
+- Update settings compatibility utility if Obsidian API changes (currently supports backward compatibility with API < 1.11.0)
+- Test compatibility with new Obsidian versions, especially workspace-related features
+
+### Project-Specific Conventions
+
+- **Settings**: Stored in `src/settings.ts` with interface and default values
+- **UI Components**: Located in `src/ui/` directory
+- **Utilities**: Located in `src/utils/` directory
+- **Settings Compatibility**: Uses `SettingGroup` compatibility pattern via `src/utils/settings-compat.ts` for backward compatibility with Obsidian < 1.11.0
+- **Code Organization**: Follows standard Obsidian plugin structure with clear separation of concerns
+
+### Project-Specific References
+
+- `.ref/plugins/obsidian-ui-tweaker/` - Reference implementation for `SettingGroup` usage and settings compatibility patterns. Used as a guide for implementing backward-compatible settings UI with proper spacing and DOM structure.
+
+### Overrides (Optional)
+
+None currently. This project follows the general `.agents` guidance.
+
+### Key Files and Their Purposes
+
+- `src/main.ts` - Plugin entry point, lifecycle management, registers settings tab and workspace event handlers
+- `src/settings.ts` - Settings interface (`DisableTabsSettings`) and default values
+- `src/ui/settings-tab.ts` - Settings UI implementation using `SettingGroup` compatibility pattern
+- `src/utils/tab-enforcer.ts` - Core functionality: `TabEnforcer` class that enforces single tab by iterating through workspace leaves and closing all but the active one
+- `src/utils/settings-compat.ts` - Settings compatibility utility for `SettingGroup` (API 1.11.0+), provides backward compatibility for older Obsidian versions
+- `styles.css` - CSS for hiding mobile tab icon when the plugin setting is enabled
+- `manifest.json` - Plugin manifest with metadata, version, and author information
+
+### Development Notes
+
+- **Tab Enforcement**: Uses `TabEnforcer` class that hooks into `layout-change` workspace events and `onLayoutReady` to enforce single tab behavior. The enforcer iterates through all workspace leaves and closes all but the active one.
+
+- **Active Leaf Detection**: The implementation avoids using deprecated `activeLeaf` property. Instead, it checks for the `is-active` class on each leaf's view container element to identify the active leaf.
+
+- **Mobile Tab Icon Hiding**: The plugin toggles a CSS class (`disable-tabs-hide-mobile-icon`) on the body element based on the `hideMobileNewTabIcon` setting. The CSS in `styles.css` hides the mobile tabs icon when this class is present.
+
+- **Settings Compatibility**: The settings tab uses `createSettingsGroup()` from `settings-compat.ts` to ensure backward compatibility. On Obsidian 1.11.0+, it uses the native `SettingGroup` API for proper spacing and grouping. On older versions, it falls back to manual heading creation and direct `Setting` usage.
+
+- **Workspace Events**: The plugin registers event handlers for `layout-change` events to continuously enforce single-tab behavior as the workspace changes. It also enforces on initial layout ready to handle the initial state.
+
+---
 
 ## Quick Start
 
-**All agent instructions are located in the [`.agents`](.agents/) directory.**
+**All general-purpose agent instructions are located in the [`.agents`](.agents/) directory**.
+
+**Quick Commands**: See [quick-reference.md](.agents/quick-reference.md#quick-commands) for one-word commands like `build`, `sync`, `release ready?`, `summarize`, `bump the version`, etc. **AI Agents: Execute these commands automatically when users type them** (detailed execution instructions are in the Help sections below).
 
 **New to this project?** Start here:
+
 0. **Set up reference materials**: Check if `.ref` folder exists and has symlinks. If not, run the setup script:
-   - **Windows**: `scripts\setup-ref-links.bat` or `.\scripts\setup-ref-links.ps1`
+   - **Windows**: `scripts\setup-ref-links.bat`
    - **macOS/Linux**: `./scripts/setup-ref-links.sh`
-   - The script will automatically create `../.ref/` (if needed), clone the 6 core Obsidian projects, and create symlinks
-1. Read [project-context.md](.agents/project-context.md) for project-specific information and overrides
-2. Read [project-overview.md](.agents/project-overview.md) to understand the structure
-3. Check [environment.md](.agents/environment.md) for setup requirements
-4. Review [common-tasks.md](.agents/common-tasks.md) for quick code snippets
-5. See [code-patterns.md](.agents/code-patterns.md) for complete examples
-6. Bookmark [quick-reference.md](.agents/quick-reference.md) for common commands
+   - The script will automatically create `../.ref/obsidian-dev/` (if needed), clone the 6 core Obsidian projects (or update them if they already exist), and create symlinks
+
+1. Read the **Project Context** section above for project-specific information and overrides
+
+3. Read [project-overview.md](.agents/project-overview.md) to understand the structure
+
+4. Check [environment.md](.agents/environment.md) for setup requirements
+
+5. Review [common-tasks.md](.agents/common-tasks.md) for quick code snippets
+
+6. See [code-patterns.md](.agents/code-patterns.md) for complete examples
+
+7. Bookmark [quick-reference.md](.agents/quick-reference.md) for common commands
 
 **Note**: For complex projects, see `.agents/.context/` directory (optional advanced feature).
 
@@ -39,9 +120,10 @@ This file serves as the entry point for AI agents working on Obsidian plugin or 
 **Do NOT check `.ref` automatically for regular coding tasks.** Most users may never need it, and it shouldn't be a barrier to getting work done.
 
 **When triggered:**
-1. Check if `.ref/obsidian-api` exists
-2. If missing, run setup script: `.\scripts\setup-ref-links.ps1` (Windows) or `./scripts/setup-ref-links.sh` (Unix)
-3. Then proceed with the API/documentation lookup
+1. Check if `.ref/obsidian-api` exists (note: this may be a symlink pointing to a central location)
+2. If missing, run setup script: `scripts\setup-ref-links.bat` (Windows) or `./scripts/setup-ref-links.sh` (Unix)
+3. If it exists but git commands fail, check if it's a symlink and navigate to the actual target location
+4. Then proceed with the API/documentation lookup
 
 **Quick check commands:**
 - Windows: `Test-Path .ref/obsidian-api`
@@ -49,7 +131,11 @@ This file serves as the entry point for AI agents working on Obsidian plugin or 
 
 ## Help: Interactive Guidance
 
-**When the user asks for "help"** or **"what's the latest"**, present these options and guide them based on their choice:
+**When the user asks for "help"**:
+1. **First, display the Quick Commands table**: Read and show the Quick Commands section from [quick-reference.md](.agents/quick-reference.md#quick-commands) (the table with all one-word commands)
+2. **Then, present these additional options** below for more detailed workflows:
+
+**When the user asks for "what's the latest"**, present these options and guide them based on their choice:
 
 ---
 
@@ -61,113 +147,152 @@ This file serves as the entry point for AI agents working on Obsidian plugin or 
 
 **Instructions for AI agent**:
 1. **First, ensure `.ref` folder is set up**: Check if `.ref/obsidian-api` exists. If not, run the setup script first (see "When to Check .ref Folder Setup" above).
-2. **Check for updates** (read-only, safe):
-   - **For core Obsidian projects**: Check `.ref/` root (obsidian-api, obsidian-sample-plugin, obsidian-developer-docs, obsidian-plugin-docs, obsidian-sample-theme)
-   - **For project-specific repos**: Check `.ref/plugins/` or `.ref/themes/` (only if documented in `project-context.md`)
-3. **Use read-only git commands**:
+2. **Determine setup**: Check if `.ref` contains symlinks (see [sync-procedure.md](.agents/sync-procedure.md#step-1-determine-your-ref-setup) for how to check). If symlinks, note the target location (usually `..\.ref\obsidian-dev`).
+3. **Check for updates** (read-only, safe):
+   - **For core Obsidian projects**: Check `.ref/` root (all 6: obsidian-api, obsidian-sample-plugin, obsidian-developer-docs, obsidian-plugin-docs, obsidian-sample-theme, eslint-plugin)
+   - **For project-specific repos**: Check `.ref/plugins/` or `.ref/themes/` (only if documented in this `AGENTS.md`)
+4. **Use read-only git commands** (from actual target location if using symlinks):
    ```bash
-   cd .ref/obsidian-api  # or other repo
+   # If using symlinks, navigate to central location first (usually ..\.ref\obsidian-dev)
+   # If using local clones, use .ref/obsidian-api directly
+   cd ../.ref/obsidian-dev/obsidian-api  # or .ref/obsidian-api for local clones
    git fetch
    git log HEAD..origin/main --oneline  # Shows what's new
    ```
-4. **Report findings**: Show what's new and ask if they want to pull updates
-5. **Never automatically pull** - always ask first (see [agent-dos-donts.md](.agents/agent-dos-donts.md))
+5. **Report findings**: Show what's new and ask if they want to pull updates
+6. **Never automatically pull** - always ask first (see [agent-dos-donts.md](.agents/agent-dos-donts.md))
 
-**Key files**: [ref-instructions.md](.agents/ref-instructions.md#checking-for-updates-to-reference-repos), [quick-sync-guide.md](.agents/quick-sync-guide.md)
+**Key files**: [ref-instructions.md](.agents/ref-instructions.md#checking-for-updates-to-reference-repos), [quick-sync-guide.md](.agents/quick-sync-guide.md), [sync-procedure.md](.agents/sync-procedure.md)
 
 ---
 
-### Option 1: Check for Updates to Reference Documentation
+### Option 1: Sync Reference Documentation
 
-**Present this option when**: User wants to sync latest best practices from official Obsidian repositories, or asks about updates to any repo in `.ref`.
+**Present this option when**: User says "sync" or "quick sync" - they want to pull latest changes from all 6 core `.ref` repos.
 
-**Instructions for AI agent**:
-1. **If user asks about a specific repo** (e.g., "are there any updates to the hider plugin repo?"):
-   - **For core Obsidian projects** (obsidian-api, obsidian-sample-plugin, etc.): Check `.ref/` root
-   - **For project-specific plugins/themes**: Check `.ref/plugins/` or `.ref/themes/` (only if documented in `project-context.md`)
-   - Use `git fetch` and `git log` to check for updates (read-only, safe)
-   - Report what's new and ask if they want to pull
-   - See [ref-instructions.md](.agents/ref-instructions.md#checking-for-updates-to-reference-repos) for detailed workflow
+**Instructions for AI agent** (execute automatically, don't just show commands):
+1. **Determine setup**: Check if `.ref` contains symlinks (see [sync-procedure.md](.agents/sync-procedure.md#step-1-determine-your-ref-setup)). This determines where to run git commands.
+2. **Execute git pull commands**: Actually run `git pull` for all 6 core repos:
+   - Navigate to the actual target location (usually `../.ref/obsidian-dev` if using symlinks)
+   - Run `git pull` in each of the 6 repos: obsidian-api, obsidian-sample-plugin, obsidian-developer-docs, obsidian-plugin-docs, obsidian-sample-theme, eslint-plugin
+   - See [quick-sync-guide.md](.agents/quick-sync-guide.md) for exact commands
+3. **Review changes**: Check git logs to see what changed in each repo (optional, but helpful)
+4. **Update `.agents/` files**: If user wants, compare changes and update relevant files (optional)
+5. **Update sync status**: Update `.agents/sync-status.json` with current date
 
-2. **If user wants to check all official repos**:
-   - Ask: "Would you like to check for updates to the core reference documentation (Sample Plugin, API, Developer Docs, etc.)?"
-   - If yes, guide them through:
-     - Pulling latest changes: See [quick-sync-guide.md](.agents/quick-sync-guide.md)
-     - Reviewing what changed: Check git logs in `.ref/` repos (the 6 core projects)
-     - Updating `.agents/` files if needed: See [sync-procedure.md](.agents/sync-procedure.md)
-   - **Note**: The 6 core Obsidian projects (obsidian-api, obsidian-sample-plugin, obsidian-developer-docs, obsidian-plugin-docs, obsidian-sample-theme, eslint-plugin) are always relevant. Project-specific plugins/themes are documented in `project-context.md`.
+**The 6 core Obsidian projects** (always relevant):
+- obsidian-api
+- obsidian-sample-plugin
+- obsidian-developer-docs
+- obsidian-plugin-docs
+- obsidian-sample-theme
+- eslint-plugin
 
-**Key files**: [ref-instructions.md](.agents/ref-instructions.md), [quick-sync-guide.md](.agents/quick-sync-guide.md), [sync-procedure.md](.agents/sync-procedure.md)
+**Key files**: [sync-procedure.md](.agents/sync-procedure.md), [quick-sync-guide.md](.agents/quick-sync-guide.md)
 
 ---
 
 ### Option 2: Add a Project to Your References
 
-**Present this option when**: User wants to reference another project (concurrent development or external reference).
+**Present this option when**: User says "add ref [name]" or "add ref [name] [URL/path]" - they want to reference another project.
 
-**Instructions for AI agent**:
-1. Ask: "Is this an external repository (GitHub, GitLab, etc.) or a local project you're actively developing?"
+**Instructions for AI agent** (execute automatically, don't just show commands):
+1. **Parse the command**: Extract the name and optional URL/path from user input
+   - If URL provided (starts with `http://`, `https://`, `git@`, etc.) → External repository
+   - If path provided (starts with `../`, `./`, `/`, `C:\`, etc.) → Local project
+   - If only name provided → Ask user: "Is this an external repository (GitHub, GitLab, etc.) or a local project path?"
    
-2. **If external repository**:
-   - Check if it already exists in `../.ref/` (or `../.ref/plugins/` or `../.ref/themes/` as appropriate)
-   - If not, clone to the global location: `cd ../.ref/plugins && git clone <URL> <name>` (adjust path as needed)
-   - Create symlink in project's `.ref/` folder pointing to the global location
-   - Document in `project-context.md` if it's project-specific
+2. **If external repository** (execute these steps):
+   - **Determine type**: Is it a plugin, theme, or other project? (infer from URL or ask)
+   - **Check if already exists**: Check `../.ref/obsidian-dev/plugins/<name>/` (for plugins), `../.ref/obsidian-dev/themes/<name>/` (for themes), or `../.ref/obsidian-dev/<name>/` (for other projects)
+   - **Execute clone command** (NOT into a `.ref` subfolder!):
+     - For plugins: Run `cd ../.ref/obsidian-dev/plugins && git clone <URL> <name>` → Creates `../.ref/obsidian-dev/plugins/<name>/` (the actual repo)
+     - For themes: Run `cd ../.ref/obsidian-dev/themes && git clone <URL> <name>` → Creates `../.ref/obsidian-dev/themes/<name>/` (the actual repo)
+     - For other projects: Run `cd ../.ref/obsidian-dev && git clone <URL> <name>` → Creates `../.ref/obsidian-dev/<name>/` (the actual repo)
+   - **Execute symlink creation**: Create symlink at `.ref/plugins/<name>/` (or `.ref/themes/<name>/` or `.ref/<name>/`) pointing to the global location
+   - **Document if project-specific**: Document in this `AGENTS.md` if it's project-specific
    
-3. **If local project**:
-   - Create symlink directly in project's `.ref/` folder pointing to the local project (e.g., `../my-other-plugin`)
-   - **Do NOT** clone to global `.ref/` - this is project-specific
-   - Document in `project-context.md` if relevant
+   **IMPORTANT**: Clone the repo directly into the target folder (e.g., `../.ref/obsidian-dev/plugins/plugin-name/`), NOT into a `.ref` subfolder. The repo folder name should match the project name.
+   
+3. **If local project** (execute these steps):
+   - **Verify path exists**: Check that the local path exists
+   - **Execute symlink creation**: Create symlink directly in project's `.ref/` folder pointing to the local project (e.g., `../my-other-plugin`)
+   - **Do NOT** clone to global `.ref/obsidian-dev/` - this is project-specific
+   - Document in this `AGENTS.md` if relevant
 
-4. **Verify**: Check that the symlink was created and works
+4. **Verify**: Check that the symlink was created and works (test by listing directory or reading a file)
 
 **Key file**: [ref-instructions.md](.agents/ref-instructions.md) - See "Adding Additional References" section
 
 ---
 
-### Option 3: Start a New Plugin or Theme Project
+### Option 3: Bump the Version
 
-**Present this option when**: User wants to create a new Obsidian plugin or theme.
+**Present this option when**: User says "bump the version", "bump version", or similar - they want to increment the version number.
+
+**Instructions for AI agent** (execute automatically, don't just show commands):
+1. **Parse the command**: Extract the version increment type from user input
+   - If no type specified → Default to `patch` (bumps by 0.0.1)
+   - If user specifies `patch`, `minor`, or `major` → Use that type
+   - If user specifies an exact version (e.g., "1.2.3") → Use that version
+   
+2. **Execute version bump**:
+   - Run `npm version <type>` where `<type>` is one of:
+     - `patch` (default) - bumps patch version: 1.0.0 → 1.0.1
+     - `minor` - bumps minor version: 1.0.0 → 1.1.0
+     - `major` - bumps major version: 1.0.0 → 2.0.0
+     - Or exact version: `1.2.3` (sets to that version)
+   - The `npm version` command automatically:
+     - Updates `package.json` version
+     - Runs the `version` script in `package.json` (which updates `manifest.json` and `versions.json` via `version-bump.mjs`)
+     - Stages `manifest.json` and `versions.json` for commit
+   
+3. **Verify**: Check that both `package.json` and `manifest.json` have the new version
+
+**Examples**:
+- `bump the version` → Runs `npm version patch` (default: 0.0.1 increment)
+- `bump version minor` → Runs `npm version minor`
+- `bump version major` → Runs `npm version major`
+- `bump version 1.2.3` → Runs `npm version 1.2.3`
+
+**Key files**: [versioning-releases.md](.agents/versioning-releases.md), `package.json`, `manifest.json`, `version-bump.mjs`
+
+---
+
+### Option 4: Start a New Plugin Project
+
+**Present this option when**: User wants to create a new Obsidian plugin.
 
 **Instructions for AI agent** - Follow this funnel:
 
-1. **Initial question**: "What kind of project are you wanting to make?"
-   - If **Plugin** → Go to Plugin Funnel
-   - If **Theme** → Go to Theme Funnel
-
-2. **Plugin Funnel** - Ask these questions in order:
+1. **Plugin Funnel** - Ask these questions in order:
    - "What functionality do you want your plugin to provide?" (core purpose)
    - "Will it need user settings or configuration?" → If yes, point to [commands-settings.md](.agents/commands-settings.md)
    - "What will it interact with?" (vault files, editor, UI components, workspace)
    - "Do you need any external API integrations?" → If yes, review [security-privacy.md](.agents/security-privacy.md) for guidelines
    - "Will it work on mobile, or desktop-only?" → Point to [mobile.md](.agents/mobile.md) and `isDesktopOnly` in [manifest.md](.agents/manifest.md)
 
-3. **Theme Funnel** - Ask these questions in order:
-   - "What visual style are you aiming for?" (color scheme, typography, layout)
-   - "Will it support both light and dark modes?" → Point to CSS variable usage
-   - "Are there specific UI elements you want to customize?" (editor, sidebar, status bar, etc.)
-   - "Do you want to include theme snippets?" → Point to file structure in [file-conventions.md](.agents/file-conventions.md)
-
-4. **After gathering answers**, guide them to:
+2. **After gathering answers**, guide them to:
    - [project-overview.md](.agents/project-overview.md) - Project structure
    - [environment.md](.agents/environment.md) - Setup and tooling
    - [file-conventions.md](.agents/file-conventions.md) - File organization
    - [common-tasks.md](.agents/common-tasks.md) - Code examples
    - [references.md](.agents/references.md) - Official documentation links
-   - **Set up `.ref` folder**: Run the setup script (`scripts/setup-ref-links.bat`, `.ps1`, or `.sh`) to configure reference materials
+   - **Set up `.ref` folder**: Run the setup script (`scripts/setup-ref-links.bat` or `.sh`) to configure reference materials
 
 **Key files**: [project-overview.md](.agents/project-overview.md), [common-tasks.md](.agents/common-tasks.md), [references.md](.agents/references.md), [ref-instructions.md](.agents/ref-instructions.md)
 
 ## Static vs. Project-Specific Files
 
-**General `.agents` files** (most files in this directory):
+**General `.agents` files** (most files in the `.agents/` directory):
 - Are synced from reference repos (Sample Plugin, API, etc.)
-- Should remain static and not be edited directly
-- Provide general-purpose guidance for all Obsidian plugins/themes
+- Should remain static and not be edited directly in plugin projects
+- Provide guidance tailored for Obsidian plugin development
+- Some files are plugin-specific, others are shared with theme development
 - Can be updated by syncing from reference repositories
 
 **Project-specific files**:
-- **[project-context.md](.agents/project-context.md)** - Simple, recommended approach for most projects
+- **This `AGENTS.md` file** - Contains project-specific information and overrides (replaces the old `project-context.md`)
   - Contains project overview, specific details, maintenance tasks, and conventions
   - Can override general `.agents` guidance when project-specific needs differ
   - Is preserved when syncing updates from reference repos
@@ -178,6 +303,24 @@ This file serves as the entry point for AI agents working on Obsidian plugin or 
   - Entry point: `.agents/.context/AGENTS.md` (if it exists)
 
 **Precedence**: When conflicts exist, project-specific files take precedence over general guidance.
+
+## How to Use This Documentation
+
+This documentation is organized into topic-based files in the `.agents/` directory. Most files are **general-purpose** and apply to all Obsidian plugins/themes. Some files are **project-specific** and can override general guidance.
+
+**Key concepts**:
+- **General files**: Synced from official Obsidian repos, provide standard guidance
+- **Project-specific files**: This `AGENTS.md` file (and optional `.agents/.context/` directory) contain project-specific information
+- **Precedence**: Project-specific files override general guidance when conflicts exist
+- **`.ref` folder**: Contains symlinks to reference materials (not actual files). See [ref-instructions.md](.agents/ref-instructions.md) for details.
+- **`.agents/` folder**: Contains general-purpose guidance files for Obsidian plugin and theme development
+
+**Quick Links by Task**:
+- **Starting a new project** → [project-overview.md](.agents/project-overview.md), [environment.md](.agents/environment.md), [file-conventions.md](.agents/file-conventions.md)
+- **Making code changes** → [build-workflow.md](.agents/build-workflow.md) (run build after changes!), [common-tasks.md](.agents/common-tasks.md), [code-patterns.md](.agents/code-patterns.md)
+- **Preparing for release** → [release-readiness.md](.agents/release-readiness.md) (comprehensive checklist), [versioning-releases.md](.agents/versioning-releases.md), [testing.md](.agents/testing.md)
+- **Troubleshooting** → [troubleshooting.md](.agents/troubleshooting.md), [common-pitfalls.md](.agents/common-pitfalls.md), [build-workflow.md](.agents/build-workflow.md)
+- **Quick reference** → [quick-reference.md](.agents/quick-reference.md) (one-page cheat sheet)
 
 ## Navigation
 
@@ -191,8 +334,8 @@ This file serves as the entry point for AI agents working on Obsidian plugin or 
 - **Working with `.ref` folder** → [ref-instructions.md](.agents/ref-instructions.md)
 
 ### Project-Specific
-- **[project-context.md](.agents/project-context.md)** - Project-specific information and overrides (simple, recommended)
-- **`.context/` directory** - Optional project-specific structure for complex projects (advanced)
+- **This `AGENTS.md` file** - Project-specific information and overrides (simple, recommended)
+- **`.agents/.context/` directory** - Optional project-specific structure for complex projects (advanced)
 
 ### Core Development
 - **[project-overview.md](.agents/project-overview.md)** - Project structure, entry points, and artifacts (Plugin/Theme)
@@ -214,6 +357,7 @@ This file serves as the entry point for AI agents working on Obsidian plugin or 
 ### Development Workflow
 - **[build-workflow.md](.agents/build-workflow.md)** - **CRITICAL**: Build commands to run after changes (Plugin/Theme)
 - **[testing.md](.agents/testing.md)** - Testing and manual installation procedures (Plugin/Theme)
+- **[release-readiness.md](.agents/release-readiness.md)** - Comprehensive release readiness checklist (Plugin)
 - **[common-tasks.md](.agents/common-tasks.md)** - Code examples and common patterns - expanded with settings, modals, views, status bar, ribbon icons (Plugin/Theme)
 - **[code-patterns.md](.agents/code-patterns.md)** - Comprehensive code patterns for settings tabs, modals, views, file operations, workspace events (Plugin)
 - **[common-pitfalls.md](.agents/common-pitfalls.md)** - Common mistakes and gotchas to avoid (Plugin)
@@ -237,19 +381,31 @@ The `.ref` folder contains **symlinks** to reference materials (not actual files
 - **Only when user explicitly asks about API/docs**: Check if `.ref/obsidian-api` exists. If not, run the setup script to create it (see "When to Check .ref Folder Setup" above)
 - **When asked to reference something**: Actively search for it using `list_dir`, `glob_file_search`, or `read_file`
 - **When adding references**: 
-  - External repos → Clone to `../.ref/` (global), then symlink in project's `.ref/`
+  - External repos → Clone to `../.ref/obsidian-dev/` (global), then symlink in project's `.ref/`
   - Local projects → Symlink directly in project's `.ref/` (don't clone to global)
 - **The `.ref` folder may be hidden** by default in file explorers, but it exists in the project root
 
 **Setup**: The setup scripts (`scripts/setup-ref-links.*`) automatically:
 1. Create `../.ref/` if it doesn't exist
-2. Clone the 6 core Obsidian projects if they don't exist
-3. Create `../.ref/plugins/` and `../.ref/themes/` folders
-4. Create symlinks in the project's `.ref/` folder
+2. Create `../.ref/obsidian-dev/` subfolder if it doesn't exist
+3. Clone the 6 core Obsidian projects to `../.ref/obsidian-dev/` if they don't exist, or pull latest changes if they do exist
+4. Create `../.ref/obsidian-dev/plugins/` and `../.ref/obsidian-dev/themes/` folders
+5. Create symlinks in the project's `.ref/` folder pointing to `../.ref/obsidian-dev/`
 
-**Philosophy**: It "just works" out of the box. The reference materials are cloned once and work indefinitely. Updates are optional and only needed if you want the latest documentation. Most users never update, and that's perfectly fine.
+**Philosophy**: It "just works" out of the box. The reference materials are cloned once and work indefinitely. The setup scripts automatically update repos when run, so you can keep them up to date by simply re-running the setup script. Updates are optional and only needed if you want the latest documentation. Most users never update, and that's perfectly fine.
 
 See [ref-instructions.md](.agents/ref-instructions.md) for complete details.
+
+## Important: .agents Folder
+
+The `.agents/` directory contains guidance files tailored for Obsidian plugin development. This directory structure provides:
+
+- **Plugin-specific guidance**: Files like `code-patterns.md`, `commands-settings.md`, and `release-readiness.md` are plugin-only
+- **Shared guidance**: Files like `build-workflow.md`, `file-conventions.md`, and `versioning-releases.md` have sections for both plugins and themes
+- **Project-specific content**: This `AGENTS.md` file remains project-specific and contains project-specific information
+- **Easy maintenance**: Files can be updated by syncing from reference repositories
+
+**Note**: The `.agents/` folder may be hidden by default in some file explorers, but it exists in the project root.
 
 ## Source Attribution
 
@@ -262,7 +418,7 @@ Each file in `.agents` includes a header comment with:
 
 ## Updating Content
 
-Content in this directory is based on:
+Content in the `.agents/` directory is based on:
 - **Obsidian API** (`.ref/obsidian-api/obsidian.d.ts`) - **Authoritative source** for all API information
 - Obsidian Sample Plugin repository - Implementation patterns and best practices
 - Obsidian Sample Theme repository - Theme patterns
@@ -277,7 +433,7 @@ Check the source attribution in each file header for update frequency guidance. 
 
 ## General Purpose / Reusable
 
-This `.agents` directory structure and content is designed to be **general-purpose and reusable** across Obsidian plugin and theme projects. The content is based on official Obsidian repositories and documentation, not project-specific code. You can:
+The `.agents` directory structure and content is designed to be **general-purpose and reusable** across Obsidian plugin and theme projects. The content is based on official Obsidian repositories and documentation, not project-specific code. You can:
 
 - Copy this structure to other Obsidian projects
 - Use it as a template for new projects
@@ -285,8 +441,8 @@ This `.agents` directory structure and content is designed to be **general-purpo
 - Adapt it for your specific needs
 
 The only project-specific content is in:
-- `project-context.md` - Project-specific information and overrides (maintained by developer)
-- `.context/` directory - Optional project-specific structure for complex projects (if it exists)
+- This `AGENTS.md` file - Project-specific information and overrides (maintained by developer)
+- `.agents/.context/` directory - Optional project-specific structure for complex projects (if it exists)
 - `ref-instructions.md` - OS-agnostic setup instructions that may need path adjustments
 
 Everything else syncs from official Obsidian sources.
@@ -294,19 +450,22 @@ Everything else syncs from official Obsidian sources.
 ## Troubleshooting
 
 **If `.ref` folder is missing or empty**:
-- Run the setup script: `scripts\setup-ref-links.bat` (Windows), `.\scripts\setup-ref-links.ps1` (PowerShell), or `./scripts/setup-ref-links.sh` (macOS/Linux)
+- Run the setup script: `scripts\setup-ref-links.bat` (Windows) or `./scripts/setup-ref-links.sh` (macOS/Linux)
 - The script will automatically set everything up
 
+**If `.agents` folder is missing**:
+- The `.agents/` folder should exist in the project root
+- If it's missing, it may need to be created or restored from the project template
+
 **If symlinks are broken**:
-- Re-run the setup script - it will recreate the symlinks
+- Re-run the appropriate setup script - it will recreate the symlinks
 
 **If you can't find a reference**:
 - Check [ref-instructions.md](.agents/ref-instructions.md) for organization
-- Check `project-context.md` for project-specific references
+- Check this `AGENTS.md` file for project-specific references
 - Use `list_dir` or `glob_file_search` to search `.ref/` folder
 
 **If build fails**:
 - See [build-workflow.md](.agents/build-workflow.md) for build commands
 - See [troubleshooting.md](.agents/troubleshooting.md) for common issues
 - See [common-pitfalls.md](.agents/common-pitfalls.md) for common mistakes
-

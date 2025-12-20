@@ -20,11 +20,15 @@ export class TabEnforcer {
       let active: WorkspaceLeaf | null = null;
       
       for (const leaf of leaves) {
-        // Check if this leaf's container has the active class
-        // The active leaf will have the 'is-active' class on its container element
-        if (leaf.containerEl?.hasClass('is-active')) {
-          active = leaf;
-          break;
+        // Check if this leaf's view container has the active class
+        // The active leaf will have the 'is-active' class on its view's container element
+        const view = leaf.view;
+        if (view && 'containerEl' in view) {
+          const containerEl = (view as { containerEl: HTMLElement }).containerEl;
+          if (containerEl && containerEl.hasClass('is-active')) {
+            active = leaf;
+            break;
+          }
         }
       }
       

@@ -6,11 +6,11 @@ import { DisableTabsSettingTab } from "./ui/settings-tab";
 export default class DisableTabsPlugin extends Plugin {
   settings!: DisableTabsSettings;
   private tabEnforcer!: TabEnforcer;
-  private mobileTabIconStyleEl?: HTMLStyleElement;
 
   async onload() {
     // Load settings
-    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
+    const loadedData = await this.loadData() as Partial<DisableTabsSettings> | null;
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, loadedData);
     
     // Initialize tab enforcer
     this.tabEnforcer = new TabEnforcer(this.app);
@@ -33,22 +33,11 @@ export default class DisableTabsPlugin extends Plugin {
   }
 
   updateMobileTabIconCSS(): void {
-    // Remove existing style element if it exists
-    if (this.mobileTabIconStyleEl) {
-      this.mobileTabIconStyleEl.remove();
-      this.mobileTabIconStyleEl = undefined;
-    }
-
-    // Add CSS if setting is enabled
+    // Toggle CSS class on body element based on setting
     if (this.settings.hideMobileNewTabIcon) {
-      this.mobileTabIconStyleEl = document.createElement("style");
-      this.mobileTabIconStyleEl.id = "disable-tabs-mobile-icon-css";
-      this.mobileTabIconStyleEl.textContent = `
-.mobile-navbar-action-tabs {
-  display: none;
-}
-      `.trim();
-      document.head.appendChild(this.mobileTabIconStyleEl);
+      document.body.classList.add("disable-tabs-hide-mobile-icon");
+    } else {
+      document.body.classList.remove("disable-tabs-hide-mobile-icon");
     }
   }
 
@@ -57,9 +46,7 @@ export default class DisableTabsPlugin extends Plugin {
   }
 
   onunload(): void {
-    // Clean up CSS style element
-    if (this.mobileTabIconStyleEl) {
-      this.mobileTabIconStyleEl.remove();
-    }
+    // Clean up CSS class
+    document.body.classList.remove("disable-tabs-hide-mobile-icon");
   }
 }

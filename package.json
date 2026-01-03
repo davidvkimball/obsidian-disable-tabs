@@ -1,6 +1,6 @@
 {
 	"name": "obsidian-disable-tabs",
-	"version": "1.0.8",
+	"version": "1.0.9",
 	"description": "Disables having more than one tab open at a time.",
 	"main": "main.js",
 	"type": "module",

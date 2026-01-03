@@ -19,7 +19,7 @@ export class DisableTabsSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     // First group (no heading)
-    const generalGroup = createSettingsGroup(containerEl);
+    const generalGroup = createSettingsGroup(containerEl, undefined, 'disable-tabs');
     generalGroup.addSetting((setting) => {
       setting
         .setName("Hide mobile tabs icon")

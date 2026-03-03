@@ -1,7 +1,7 @@
-import { App, PluginSettingTab } from "obsidian";
+import { App, PluginSettingTab , SettingGroup} from "obsidian";
 import DisableTabsPlugin from "../main";
 import { DisableTabsSettings } from "../settings";
-import { createSettingsGroup } from "../utils/settings-compat";
+
 
 export class DisableTabsSettingTab extends PluginSettingTab {
   plugin: DisableTabsPlugin;
@@ -19,15 +19,15 @@ export class DisableTabsSettingTab extends PluginSettingTab {
     containerEl.empty();
 
     // First group (no heading)
-    const generalGroup = createSettingsGroup(containerEl, undefined, 'disable-tabs');
-    generalGroup.addSetting((setting) => {
+    const generalGroup = new SettingGroup(containerEl);
+    generalGroup.addSetting((setting: any) => {
       setting
         .setName("Hide mobile tabs icon")
         .setDesc("Hide the tabs icon on mobile devices")
-        .addToggle((toggle) =>
+        .addToggle((toggle: any) =>
           toggle
             .setValue(this.settings.hideMobileNewTabIcon)
-            .onChange(async (value) => {
+            .onChange(async (value: any) => {
               this.settings.hideMobileNewTabIcon = value;
               await this.plugin.saveSettings();
               this.plugin.updateMobileTabIconCSS();

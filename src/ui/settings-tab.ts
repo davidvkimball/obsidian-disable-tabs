@@ -20,14 +20,14 @@ export class DisableTabsSettingTab extends PluginSettingTab {
 
     // First group (no heading)
     const generalGroup = new SettingGroup(containerEl);
-    generalGroup.addSetting((setting: any) => {
+    generalGroup.addSetting(setting => {
       setting
         .setName("Hide mobile tabs icon")
         .setDesc("Hide the tabs icon on mobile devices")
-        .addToggle((toggle: any) =>
+        .addToggle(toggle =>
           toggle
             .setValue(this.settings.hideMobileNewTabIcon)
-            .onChange(async (value: any) => {
+            .onChange(async value => {
               this.settings.hideMobileNewTabIcon = value;
               await this.plugin.saveSettings();
               this.plugin.updateMobileTabIconCSS();

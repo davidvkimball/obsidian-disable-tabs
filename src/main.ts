@@ -35,9 +35,9 @@ export default class DisableTabsPlugin extends Plugin {
   updateMobileTabIconCSS(): void {
     // Toggle CSS class on body element based on setting
     if (this.settings.hideMobileNewTabIcon) {
-      document.body.classList.add("disable-tabs-hide-mobile-icon");
+      activeDocument.body.classList.add("disable-tabs-hide-mobile-icon");
     } else {
-      document.body.classList.remove("disable-tabs-hide-mobile-icon");
+      activeDocument.body.classList.remove("disable-tabs-hide-mobile-icon");
     }
   }
 
@@ -47,6 +47,6 @@ export default class DisableTabsPlugin extends Plugin {
 
   onunload(): void {
     // Clean up CSS class
-    document.body.classList.remove("disable-tabs-hide-mobile-icon");
+    activeDocument.body.classList.remove("disable-tabs-hide-mobile-icon");
   }
 }

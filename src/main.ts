@@ -7,6 +7,15 @@ export default class DisableTabsPlugin extends Plugin {
   settings!: DisableTabsSettings;
   private tabEnforcer!: TabEnforcer;
 
+  // The main app window's document. Obsidian 1.13.0+ opens Settings in a
+  // separate window, so `activeDocument` (the focused window) can point at the
+  // Settings window while a setting is being changed. This feature is mobile-
+  // only (where there is no separate Settings window), but using the main
+  // window's document keeps it correct under desktop "emulate mobile" too.
+  private get doc(): Document {
+    return this.app.workspace.containerEl.ownerDocument;
+  }
+
   async onload() {
     // Load settings
     const loadedData = await this.loadData() as Partial<DisableTabsSettings> | null;
@@ -35,9 +44,9 @@ export default class DisableTabsPlugin extends Plugin {
   updateMobileTabIconCSS(): void {
     // Toggle CSS class on body element based on setting
     if (this.settings.hideMobileNewTabIcon) {
-      activeDocument.body.classList.add("disable-tabs-hide-mobile-icon");
+      this.doc.body.classList.add("disable-tabs-hide-mobile-icon");
     } else {
-      activeDocument.body.classList.remove("disable-tabs-hide-mobile-icon");
+      this.doc.body.classList.remove("disable-tabs-hide-mobile-icon");
     }
   }
 
@@ -47,6 +56,6 @@ export default class DisableTabsPlugin extends Plugin {
 
   onunload(): void {
     // Clean up CSS class
-    activeDocument.body.classList.remove("disable-tabs-hide-mobile-icon");
+    this.doc.body.classList.remove("disable-tabs-hide-mobile-icon");
   }
 }
